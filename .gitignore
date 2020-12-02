@@ -1,2 +1,3 @@
 _agent.js
 *.pyc
+*/__pycache__
