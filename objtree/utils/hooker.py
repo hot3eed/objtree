@@ -37,6 +37,8 @@ class Hooker:
                 ui.on_finished_hooking(message['hooks'], message['depth'])
             elif mtype == 'agent:hook_installed':
                 ui.on_hook_installed(message['target'])
+            elif mtype == 'events:add':
+                ui.on_events_add(message)
             else:
                 print(f"Unhandled type: {mtype}, message: {message}")
         else:

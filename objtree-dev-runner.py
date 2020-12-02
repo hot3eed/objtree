@@ -43,6 +43,12 @@ def main():
         def on_hook_installed(self, target):
             self._print(f"[!] Installed hook at {target}")
 
+        def on_events_add(self, events):
+            for e in events:
+                depth = e[0]
+                objc_msg = e[1]
+                self._print("|  " * depth + objc_msg)
+
     app = TestApplication()
     app.run()
 

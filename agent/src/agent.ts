@@ -1,5 +1,5 @@
 import { stringify } from 'querystring';
-import { HookSpec } from './lib/types';
+import { HookSpec, TraceEvent } from './lib/types';
 import { formatObjCMethod } from './lib/formatters';
 
 export class Agent {
@@ -9,6 +9,8 @@ export class Agent {
     private objc_msgSend: NativePointer | null = null;
     private stackDepth: number = 0;
     private installedHooks = 0;
+    private pendingEvents: TraceEvent[] = [];
+    private flushTimer: any = null;
 
     init(spec: HookSpec, stackDepth: number) {
         this.stackDepth = stackDepth;
@@ -102,7 +104,8 @@ export class Agent {
         Interceptor.attach(pointer, {
             onEnter: function (args) {
                 const originThreadId = this.threadId;
-                console.log("\n" + funcDescription);
+                //console.log("\n" + funcDescription);
+                agent.emit([0, funcDescription]);
                 this.hook = Interceptor.attach(objc_msgSend, 
                     {
                         onEnter: function (args) {
@@ -112,7 +115,7 @@ export class Agent {
                         }
                     });
             }, onLeave: function (retval) {
-                console.log("Exiting\n");
+                agent.emit([-1, '---------------------------------']);  // Use depth -1 to mark the exiting of a function
                 this.hook.detach();
             }
         });
@@ -145,8 +148,37 @@ export class Agent {
         }
 
         let clsName = ObjC.api.class_getName(cls).readCString();
-        console.log('|  '.repeat(ctx.depth) + `${typeQualifier}[${clsName} ${selector}]`);
+        //console.log('|  '.repeat(ctx.depth) + `${typeQualifier}[${clsName} ${selector}]`);
+        let objcMessage = `${typeQualifier}[${clsName} ${selector}]`;
+
+        this.emit([ctx.depth, objcMessage])
     }
+
+    private emit(event: TraceEvent) {
+        this.pendingEvents.push(event);
+
+        if (this.flushTimer == null) {
+            this.flushTimer = setTimeout(this.flush, 50);
+        }
+    }
+
+    private flush = () => {
+        if (this.flushTimer != null) {
+            clearTimeout(this.flushTimer);
+            this.flushTimer = null;
+        }
+
+        if (this.pendingEvents.length == 0) {
+            return;
+        }
+
+        send({
+            type: 'events:add',
+            message: this.pendingEvents
+        });
+
+        this.pendingEvents = [];
+    };
 }
 
 function parseModuleFunctionPattern(pattern: string) {
