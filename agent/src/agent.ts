@@ -154,6 +154,7 @@ export class Agent {
         this.emit([ctx.depth, objcMessage])
     }
 
+    // Credits for the following 3 funcs: https://github.com/frida/frida-tools/blob/master/agents/tracer/agent.ts
     private emit(event: TraceEvent) {
         this.pendingEvents.push(event);
 
