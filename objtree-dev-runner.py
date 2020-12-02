@@ -59,9 +59,8 @@ def main():
                 depth = e[0]
                 objc_msg = e[1]
                 out = "|  " * depth + objc_msg
-                if self._output is None:
-                    self._print(out)
-                else:
+                self._print(out)
+                if self._output is not None:
                     self._output.append(out + '\n')
 
     app = TestApplication()
