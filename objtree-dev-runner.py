@@ -26,7 +26,7 @@ def main():
             parser.add_option('-a', '--hook-function-offset', help="hook FUNCTION_OFFSET relative to binary base",
                                 metavar='FUNCTION_OFFSET', type='int', action='callback',
                                 callback=process_builder_arg, callback_args=(pb.hook_function_offset,))
-            parser.add_option('-s', '--stack-depth', type='int', help="trace functions up to STACK_DEPTH",
+            parser.add_option('-s', '--stack-depth', type='int', help="trace functions up to STACK_DEPTH, default is 8",
                                 metavar='STACK_DEPTH', action='callback',
                                 callback=process_builder_arg, callback_args=(pb.set_stack_depth,))
             parser.add_option('-o', '--output', help="dump output to file OUTPUT", metavar='OUTPUT', type='string')
@@ -49,7 +49,7 @@ def main():
             self._output = None
 
         def on_finished_hooking(self, num_hooks, stack_depth):
-            self._update_status(f"Intercepting {num_hooks} function(s) at stack depth {stack_depth}...")
+            self._update_status(f"Intercepting {num_hooks} function(s) with stack depth {stack_depth}...")
 
         def on_hook_installed(self, target):
             self._print(f"[!] Installed hook at {target}")
