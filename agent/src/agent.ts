@@ -30,13 +30,11 @@ export class Agent {
         }
     }
 
-    private start(spec: HookSpec): number {
+    private start(spec: HookSpec) {
         this.objc_msgSend = Module.findExportByName(null, 'objc_msgSend');
         if (this.objc_msgSend == null) {
             throw new Error("Could not find objc_msgSend");
         }
-
-        let installedHooks: number = 0;
 
         for (const [key, value] of spec) {
             switch (key) {
@@ -45,6 +43,7 @@ export class Agent {
                     break;
                 }
                 case 'function': {
+                    console.log('fuck');
                     this.installFunctionHook(<string>value);
                     break;
                 }
@@ -54,8 +53,6 @@ export class Agent {
                 }
             }
         } 
-        
-        return installedHooks;
     }
 
     private installObjCHook(pattern: string) {
