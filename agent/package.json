@@ -1,0 +1,30 @@
+{
+  "name": "objtree",
+  "version": "0.5.0",
+  "description": "Objective-C recursive message listing, think `tree` but for dispatched messages.",
+  "main": "src/index.js",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "frida-compile src/index.ts -o ../_agent.js",
+    "watch": "frida-compile src/index.ts -o ../_agent.js -w"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/frida-gum": "^16.2.0",
+    "@types/node": "^14.14.10",
+    "frida-compile": "^10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hot3eed/objtree.git"
+  },
+  "keywords": [
+    "objective-c"
+  ],
+  "author": "hot3eed",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hot3eed/objtree/issues"
+  },
+  "homepage": "https://github.com/hot3eed/objtree#readme"
+}

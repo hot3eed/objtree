@@ -1,0 +1,3 @@
+[submodule "frida-tools"]
+	path = frida-tools
+	url = https://github.com/frida/frida-tools.git
