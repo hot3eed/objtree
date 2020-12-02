@@ -36,7 +36,7 @@ class Hooker:
             elif mtype == 'agent:installed_hooks':
                 num_hooks = message['hooks']
                 stack_depth = message['depth']
-                ui._update_status(f"Hooks installed successfully, intercepting {num_hooks} function(s) at stack depth {stack_depth}...")
+                ui._update_status(f"Intercepting {num_hooks} function(s) at stack depth {stack_depth}...")
             else:
                 print(message)
         else:
