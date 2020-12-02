@@ -33,11 +33,11 @@ class Hooker:
             if mtype == 'agent:error':
                 ui._update_status(f"Failed to install hooks: {message}")
                 ui._exit(1)
-            elif mtype == 'agent:installed_hooks':
-                num_hooks = message['hooks']
-                stack_depth = message['depth']
-                ui._update_status(f"Intercepting {num_hooks} function(s) at stack depth {stack_depth}...")
+            elif mtype == 'agent:finished_hooking':
+                ui.on_finished_hooking(message['hooks'], message['depth'])
+            elif mtype == 'agent:hook_installed':
+                ui.on_hook_installed(message['target'])
             else:
-                print(message)
+                print(f"Unhandled type: {mtype}, message: {message}")
         else:
             print(message)

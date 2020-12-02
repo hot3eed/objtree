@@ -20,10 +20,10 @@ def main():
             parser.add_option('-m', '--hook-objc-method', help="hook OBJC_METHOD", 
                                 metavar='OBJC_METHOD', type='string', action='callback',
                                 callback=process_builder_arg, callback_args=(pb.hook_objc_method,))
-            parser.add_option('-u', '--hook-function', help="hook FUNCTION",
+            parser.add_option('-i', '--hook-function', help="hook FUNCTION",
                                 metavar='FUNCTION', type='string', action='callback',
                                 callback=process_builder_arg, callback_args=(pb.hook_function,))
-            parser.add_option('-t', '--hook-function-offset', help="hook FUNCTION_OFFSET relative to binary base",
+            parser.add_option('-a', '--hook-function-offset', help="hook FUNCTION_OFFSET relative to binary base",
                                 metavar='FUNCTION_OFFSET', type='int', action='callback',
                                 callback=process_builder_arg, callback_args=(pb.hook_function_offset,))
             parser.add_option('-s', '--stack-depth', type='int', action='callback',
@@ -36,6 +36,12 @@ def main():
         def _start(self):
             hooker = Hooker(self._profile, self._session, self._reactor)
             hooker.start_hooking(self)
+
+        def on_finished_hooking(self, num_hooks, stack_depth):
+            self._update_status(f"Intercepting {num_hooks} function(s) at stack depth {stack_depth}...")
+
+        def on_hook_installed(self, target):
+            self._print(f"[!] Installed hook at {target}")
 
     app = TestApplication()
     app.run()

@@ -16,7 +16,7 @@ export class Agent {
         try {
             this.start(spec);
             send({
-                type: 'agent:installed_hooks',
+                type: 'agent:finished_hooking',
                 message: {
                     hooks: this.installedHooks,
                     depth: this.stackDepth
@@ -43,7 +43,6 @@ export class Agent {
                     break;
                 }
                 case 'function': {
-                    console.log('fuck');
                     this.installFunctionHook(<string>value);
                     break;
                 }
@@ -76,7 +75,8 @@ export class Agent {
     }
     
     private installFunctionHook(pattern: string) {
-        for (const m of this.getModuleResolver().enumerateMatches(pattern)) {
+        const q = parseModuleFunctionPattern(pattern);
+        for (const m of this.getModuleResolver().enumerateMatches(`exports:${q.module}!${q.function}`)) {
             this.installHook(m.address, m.name);
         }
     }
@@ -95,7 +95,6 @@ export class Agent {
         this.installHook(funcAbsoluteAddr, `function at address ${funcAbsoluteAddr}`)
     }
 
-    private hook = null;
     private installHook(pointer: NativePointer, funcDescription: string) {
         const objc_msgSend = <NativePointer>this.objc_msgSend;
         const agent = this;
@@ -117,7 +116,14 @@ export class Agent {
                 this.hook.detach();
             }
         });
+
         this.installedHooks++;
+        send({
+            type: 'agent:hook_installed',
+            message: {
+                target: funcDescription
+            }
+        });
     }
 
     private objcOnEnter(ctx: InvocationContext, args: InvocationArguments) {
@@ -141,4 +147,22 @@ export class Agent {
         let clsName = ObjC.api.class_getName(cls).readCString();
         console.log('|  '.repeat(ctx.depth) + `${typeQualifier}[${clsName} ${selector}]`);
     }
+}
+
+function parseModuleFunctionPattern(pattern: string) {
+    const tokens = pattern.split("!", 2);
+
+    let m, f;
+    if (tokens.length === 1) {
+        m = "*";
+        f = tokens[0];
+    } else {
+        m = (tokens[0] === "") ? "*" : tokens[0];
+        f = (tokens[1] === "") ? "*" : tokens[1];
+    }
+
+    return {
+        module: m,
+        function: f
+    };
 }
