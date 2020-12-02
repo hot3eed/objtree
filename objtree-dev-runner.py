@@ -4,7 +4,7 @@ from objtree.utils.hooker import Hooker
 
 def main():
     from frida_tools.application import ConsoleApplication
-    from frida_tools.tracer import UI
+    from frida_tools.tracer import UI, OutputFile
 
     class TestApplication(ConsoleApplication, UI):
         def _usage(self):
@@ -26,16 +26,27 @@ def main():
             parser.add_option('-a', '--hook-function-offset', help="hook FUNCTION_OFFSET relative to binary base",
                                 metavar='FUNCTION_OFFSET', type='int', action='callback',
                                 callback=process_builder_arg, callback_args=(pb.hook_function_offset,))
-            parser.add_option('-s', '--stack-depth', type='int', action='callback',
+            parser.add_option('-s', '--stack-depth', type='int', help="trace functions up to STACK_DEPTH",
+                                metavar='STACK_DEPTH', action='callback',
                                 callback=process_builder_arg, callback_args=(pb.set_stack_depth,))
+            parser.add_option('-o', '--output', help="dump output to file OUTPUT", metavar='OUTPUT', type='string')
             self._profile_builder = pb
 
         def _initialize(self, parser, options, args):
             self._profile = self._profile_builder.build()
+            self._output = None
+            self._output_path = options.output
 
         def _start(self):
             hooker = Hooker(self._profile, self._session, self._reactor)
             hooker.start_hooking(self)
+            if self._output_path is not None:
+                self._output = OutputFile(self._output_path)
+
+        def _stop(self):
+            if self._output is not None:
+                self._output.close()
+            self._output = None
 
         def on_finished_hooking(self, num_hooks, stack_depth):
             self._update_status(f"Intercepting {num_hooks} function(s) at stack depth {stack_depth}...")
@@ -47,7 +58,11 @@ def main():
             for e in events:
                 depth = e[0]
                 objc_msg = e[1]
-                self._print("|  " * depth + objc_msg)
+                out = "|  " * depth + objc_msg
+                if self._output is None:
+                    self._print(out)
+                else:
+                    self._output.append(out + '\n')
 
     app = TestApplication()
     app.run()
