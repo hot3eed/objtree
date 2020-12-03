@@ -7,7 +7,7 @@
 
 ## Showcase
 ```
-Usage: cli.py [options] target
+Usage: objtree [options] target
 
 Options:
   --version             show program's version number and exit
