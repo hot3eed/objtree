@@ -9,6 +9,7 @@ setup(
     description="tree but for Objective-C messages",
     author='hot3eed',
     author_email='hot3eed@gmail.com',
+    url='https://github.com/hot3eed/objtree',
     install_requires=[
         'frida-tools >= 9.0.0, < 10.0.0',
     ],
