@@ -1,4 +1,3 @@
-
 from .utils.hooker import Hooker
 from frida_tools.application import ConsoleApplication
 from frida_tools.tracer import UI, OutputFile
