@@ -2,8 +2,6 @@ from os import path
 
 import frida
 
-from ..console import logger
-
 
 class Hooker:
     def __init__(self, profile, session, reactor):
@@ -39,7 +37,5 @@ class Hooker:
                 ui.on_hook_installed(message['target'])
             elif mtype == 'events:add':
                 ui.on_events_add(message)
-            else:
-                print(f"Unhandled type: {mtype}, message: {message}")
         else:
             print(message)
