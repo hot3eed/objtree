@@ -5,7 +5,7 @@ cwd = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='objtree',
-    version='0.5.1',
+    version='0.5.2',
     description="tree but for Objective-C messages",
     author='hot3eed',
     author_email='hot3eed@gmail.com',
