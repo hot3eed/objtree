@@ -7,7 +7,7 @@
 
 ## Showcase
 ```
-Usage: objtree [options] target
+Usage: cli.py [options] target
 
 Options:
   --version             show program's version number and exit
@@ -31,24 +31,19 @@ Options:
   --squelch-crash       if enabled, will not dump crash report to console
   -O FILE, --options-file=FILE
                         text file containing additional command line options
-  -m OBJC_METHOD, --hook-objc-method=OBJC_METHOD
-                        hook OBJC_METHOD
-  -i FUNCTION, --hook-function=FUNCTION
-                        hook FUNCTION
-  -a FUNCTION_OFFSET, --hook-function-offset=FUNCTION_OFFSET
-                        hook FUNCTION_OFFSET relative to binary base
-  -s STACK_DEPTH, --stack-depth=STACK_DEPTH
-                        trace functions up to STACK_DEPTH, default is 8
+  -m OBJC_METHOD        include OBJC_METHOD
+  -i FUNCTION           include FUNCTION
+  -a FUNCTION_OFFSET    add FUNCTION_OFFSET, relative to binary base
+  -L STACK_DEPTH        trace functions up to STACK_DEPTH, default is 8
   -o OUTPUT, --output=OUTPUT
                         dump output to file OUTPUT
-
 ```
 ![screenshot1.png](assets/screenshot1.png)
 
 ### Examples
 * `objtree <some_process> -m "-[InterestingClass interestingMethod:withArg:]"`
 * `objtree <some_process> -i LibFoo!bar`
-* `objtree <some_process> -i generate_interesting_value -s 6`
+* `objtree <some_process> -i generate_interesting_value -L 6`
     * Here, matches for the function name in all modules would be hooked
 * `objtree <some_process> -a <offset>`
     * `offset` here would be the target method's relative offset to `some_process` base
