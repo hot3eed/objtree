@@ -3,3 +3,6 @@ _agent.js
 */__pycache__/
 node_modules/
 .DS_Store
+dist/
+*.egg-info/
+venv/
