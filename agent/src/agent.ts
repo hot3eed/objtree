@@ -1,6 +1,5 @@
 import { stringify } from 'querystring';
 import { HookSpec, TraceEvent } from './lib/types';
-import { formatObjCMethod } from './lib/formatters';
 
 export class Agent {
     private moduleBase = Process.enumerateModules()[0].base;
