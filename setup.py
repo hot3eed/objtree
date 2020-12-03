@@ -10,10 +10,7 @@ setup(
     author='hot3eed',
     author_email='hot3eed@gmail.com',
     install_requires=[
-        "colorama >= 0.2.7, < 1.0.0",
-        "frida >= 14.0.0, < 15.0.0",
-        "prompt-toolkit >= 2.0.0, < 4.0.0",
-        "pygments >= 2.0.2, < 3.0.0"
+        'frida-tools >= 9.0.0, < 10.0.0',
     ],
     license='Apache License 2.0',
     keywords='dynamic-instrumentation ios macos frida debugger',
