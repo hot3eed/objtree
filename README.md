@@ -49,7 +49,7 @@ Options:
     * `offset` here would be the target method's relative offset to `some_process` base
 
 ## Note
-A crash could happen under a very high volume of functions being intercepted, due to memory overload, which is very possible when working on a big binary. I tried to make the tool as lightweight as possible to avoid this. But if you face a crash, try to intercept one function at a time and adjust the stack depth filter, or intercept a function lower on the call stack. Issues are welcome as well if you think it's something non-memory related.
+A crash could happen under a very high volume of functions being intercepted, due to memory overload, which is very possible when working on a big binary. I tried to make the tool as lightweight as possible to avoid this. But if you face a crash, try to intercept one function at a time and adjust the stack depth filter, or intercept a function lower down the call stack. Issues are welcome as well if you think it's something non-memory related.
 
 ## Installation
 `pip3 install objtree`
