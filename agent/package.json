@@ -1,6 +1,6 @@
 {
   "name": "objtree",
-  "version": "0.5.0",
+  "version": "0.0.0",
   "description": "Objective-C recursive message listing, think `tree` but for dispatched messages.",
   "main": "src/index.js",
   "scripts": {
