@@ -1,7 +1,9 @@
 from .utils.hooker import Hooker
+
 from frida_tools.application import ConsoleApplication
 from frida_tools.tracer import UI, OutputFile
 
+import argparse
 
 class TestApplication(ConsoleApplication, UI):
     def _usage(self):
@@ -9,24 +11,25 @@ class TestApplication(ConsoleApplication, UI):
 
     def _needs_target(self):
         return True
-
-    def _add_options(self, parser):
+    
+    def _add_options(self, parser: argparse.ArgumentParser):
         pb = HookerProfileBuilder()
         def process_builder_arg(option, opt_str, value, parser, method, **kwargs):
             method(value)
-        parser.add_option('-m', help="include OBJC_METHOD", 
-                            metavar='OBJC_METHOD', type='string', action='callback',
-                            callback=process_builder_arg, callback_args=(pb.hook_objc_method,))
-        parser.add_option('-i', help="include FUNCTION",
-                            metavar='FUNCTION', type='string', action='callback',
-                            callback=process_builder_arg, callback_args=(pb.hook_function,))
-        parser.add_option('-a',  help="add FUNCTION_OFFSET, relative to binary base",
-                            metavar='FUNCTION_OFFSET', type='int', action='callback',
-                            callback=process_builder_arg, callback_args=(pb.hook_function_offset,))
-        parser.add_option('-L', type='int', help="trace functions up to STACK_DEPTH, default is 8",
-                            metavar='STACK_DEPTH', action='callback',
-                            callback=process_builder_arg, callback_args=(pb.set_stack_depth,))
-        parser.add_option('-o', '--output', help="dump output to file OUTPUT", metavar='OUTPUT', type='string')
+        parser.add_argument('-m', metavar='OBJC_METHOD', type=str, 
+                            action=ProcessBuilderAction, dest='hook_objc_method',
+                            help="include OBJC_METHOD", pb=pb)
+        parser.add_argument('-i', metavar='FUNCTION', type=str,
+                            action=ProcessBuilderAction, dest='hook_function',
+                            help="include FUNCTION", pb=pb)
+        parser.add_argument('-a', metavar='FUNCTION_OFFSET', type=int,
+                            action=ProcessBuilderAction, dest='hook_function_offset',
+                            help="add FUNCTION_OFFSET, relative to binary base (as an int, not hex)", pb=pb)
+        parser.add_argument('-L', metavar='STACK_DEPTH', type=int, default=8,
+                            action=ProcessBuilderAction, dest='set_stack_depth',
+                            help="trace functions up to STACK_DEPTH, default is 8", pb=pb)
+        parser.add_argument('-o', '--output', metavar='OUTPUT', type=str,
+                            help="dump output to file OUTPUT")
         self._profile_builder = pb
 
     def _initialize(self, parser, options, args):
@@ -88,6 +91,24 @@ class HookerProfileBuilder(object):
     def build(self):
         return HookerProfile(self._spec, self._stack_depth)
 
+class ProcessBuilderAction(argparse.Action):
+    def __init__(self, option_strings, dest, pb: HookerProfileBuilder, nargs=None, **kwargs):
+        if nargs is not None:
+            raise ValueError("nargs not allowed")
+        self.pb = pb
+        super(ProcessBuilderAction, self).__init__(option_strings, dest, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        # Exemple de callback - à adapter selon votre besoin
+        if self.dest == 'hook_objc_method':
+            self.pb.hook_objc_method(values)
+        elif self.dest == 'hook_function':
+            self.pb.hook_function(values)
+        elif self.dest == 'hook_function_offset':
+            self.pb.hook_function_offset(values)
+        elif self.dest == 'set_stack_depth':
+            self.pb.set_stack_depth(values)
+        setattr(namespace, self.dest, values)
 
 class HookerProfile(object):
     def __init__(self, spec, stack_depth):
