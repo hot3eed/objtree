@@ -5,13 +5,13 @@ cwd = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='objtree',
-    version='0.5.2',
+    version='0.5.3',
     description="tree but for Objective-C messages",
     author='hot3eed',
     author_email='hot3eed@gmail.com',
     url='https://github.com/hot3eed/objtree',
     install_requires=[
-        'frida-tools >= 9.0.0, < 10.0.0',
+        'frida-tools',
     ],
     license='Apache License 2.0',
     keywords='dynamic-instrumentation ios macos frida debugger',
